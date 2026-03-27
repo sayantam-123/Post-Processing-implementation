@@ -4,7 +4,7 @@
 #include <glad/glad.h>
 #include <raymath.h>
 #include <cstdio>
-
+#include <vector>
 
 
 
@@ -23,14 +23,15 @@ void switch_line(Shader& predator,int& scanLoc , int& scan);
 void DrawFullscreenQuadRaw(unsigned int shaderID, unsigned int colorTex, unsigned int depthTex);
 Matrix GetViewMatrix(Camera3D cam);
 Matrix GetProjectionMatrix(Camera3D cam, float aspect);
+void writeName(int& curr_shader);
 
 
 enum shaderType{
-    sobel,
+    nothing,
     gray_lum,
     negative,
     predator,
-    nothing,
+    sobel,
     laplace,
     film_grain,
     motion_blur
@@ -51,33 +52,32 @@ int main(){
     Model model = LoadModel("clock-shaped-as-a-highlanders-cottage/1259_MT_Zegar.obj");
 
 
-    Shader shaders[10] = {0};
+    std::vector<Shader> shaders;
+
+    //Shader shaders[10] = {0};
 
     Shader default_shader = LoadShader(NULL,NULL);
-    shaders[0] = default_shader;
+    shaders.push_back(default_shader);
+
+    Shader gray_lum = LoadShader(NULL, "shaders/grayscale_lum.fs");
+    shaders.push_back(gray_lum);
+
+    Shader negative = LoadShader(NULL, "shaders/negative.fs");
+    shaders.push_back(negative);
+
+    Shader predator = LoadShader(NULL, "shaders/predator.fs");
+    shaders.push_back(predator);
+
+    Shader sobel = LoadShader(NULL, "shaders/sobel.fs");
+    shaders.push_back(sobel);
 
 
-    //grayscale only luminance
-    Shader gray_lum = LoadShader(NULL, "grayscale_lum.fs");
-    shaders[1] = gray_lum;
-
-    Shader negative = LoadShader(NULL, "negative.fs");
-    shaders[2] = negative;
-
-    Shader predator = LoadShader(NULL, "predator.fs");
-    shaders[3] = predator;
-
-    //sobel shader
-    Shader sobel = LoadShader(NULL, "sobel.fs");
-    shaders[4] = sobel;
-
-
-    Shader laplace = LoadShader(NULL, "laplacian.fs");
-    shaders[5] = laplace;
+    Shader laplace = LoadShader(NULL, "shaders/laplacian.fs");
+    shaders.push_back(laplace);
 
     //fim grain
-    Shader filmgrain = LoadShader(NULL, "film_grain.fs");
-    shaders[6] = filmgrain;
+    Shader filmgrain = LoadShader(NULL, "shaders/film_grain.fs");
+    shaders.push_back(filmgrain);
 
     int grainStrengthLoc = GetShaderLocation(filmgrain, "strength");
     float grainStrength = 0.2f;
@@ -120,8 +120,8 @@ int main(){
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     // load a custom vertex shader too - needed for fullscreen triangle trick
-    Shader motionBlur = LoadShader("mb.vs", "mb.fs");
-    shaders[7] = motionBlur;
+    Shader motionBlur = LoadShader("shaders/mb.vs", "shaders/mb.fs");
+    shaders.push_back(motionBlur);
     int currVPInvLoc = GetShaderLocation(motionBlur, "currentVPInverse");
     int prevVPLoc_mb = GetShaderLocation(motionBlur, "previousVP");
     int samplesLoc   = GetShaderLocation(motionBlur, "numSamples");
@@ -169,10 +169,11 @@ int main(){
                 glEnable(GL_DEPTH_TEST);
 
                 BeginMode3D(camera);
+                    DrawText("alu", 200, 160, 40, BLUE);
                     DrawModel(model, cubePosition, 0.1f, WHITE);
                     DrawGrid(20, 5.0f);
                 EndMode3D();
-
+                writeName(current_shader);
             rlDrawRenderBatchActive();          // flush raylib's draw calls INTO gbuffer
 
 
@@ -225,11 +226,13 @@ int main(){
 
                 BeginMode3D(camera);
 
+
                     DrawModel(model, cubePosition, 0.1f, WHITE );
                     DrawGrid(20, 5.0f);
 
                 EndMode3D();
 
+            writeName(current_shader);
             EndTextureMode();
 
             BeginDrawing();
@@ -329,6 +332,37 @@ void switch_line(Shader& predator,int& scanLoc , int& scan){
     }
 }
 
+void writeName(int& curr_shader){
+    switch(curr_shader){
+        case sobel:
+            DrawText("SOBEL", 100, 90, 90, ORANGE);
+            break;
+        case gray_lum:
+            DrawText("GRAYSCALE", 100, 90, 90, ORANGE);
+            break;
+        case negative:
+            DrawText("NEGATIVE", 100, 90, 90, ORANGE);
+            break;
+        case predator:
+            DrawText("PREDATOR", 100, 90, 90, ORANGE);
+            break;
+        case nothing:
+            DrawText("DEFAULT", 100, 90, 90, ORANGE);
+            break;
+        case laplace:
+            DrawText("LAPLACIAN", 100, 90, 90, ORANGE);
+            break;
+        case film_grain:
+            DrawText("FILM GRAIN", 100, 90, 90, ORANGE);
+            break;
+        case motion_blur:
+            DrawText("MOTION BLUR", 100, 90, 90, ORANGE);
+            break;
+
+
+
+    }
+}
 
 void switch_shader(int& curr_shader){
     if (curr_shader == 7){
