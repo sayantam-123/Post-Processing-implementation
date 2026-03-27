@@ -16,4 +16,4 @@
 ## Tweaking Motion Blur
 
 In `motion_blur.cpp`:
-- `samples` — number of blur samples, higher = smoother but slower (default: 16)
+- `samples` — number of blur samples, higher = smoother but slower
