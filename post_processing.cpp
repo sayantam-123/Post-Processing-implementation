@@ -48,7 +48,7 @@ int main(){
 
     Vector3 cubePosition = {0.0f,15.0f,0.0f};
 
-    Model model = LoadModel("clock-shaped-as-a-highlanders-cottage/source/1259/1259_MT_Zegar.obj");
+    Model model = LoadModel("clock-shaped-as-a-highlanders-cottage/1259_MT_Zegar.obj");
 
 
     Shader shaders[10] = {0};
@@ -159,7 +159,6 @@ int main(){
 
             if(first_frame){ prevVP = currentVP; first_frame = false; }
 
-            UpdateCamera(&camera, CAMERA_FREE);
 
             // --- Pass 1: render scene into GBuffer ---
             rlDrawRenderBatchActive();          // flush raylib before switching FB
