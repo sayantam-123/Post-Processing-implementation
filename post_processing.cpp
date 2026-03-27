@@ -119,6 +119,7 @@ int main(){
     GBuffer gb = CreateGBuffer(screenWidth, screenHeight);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+
     // load a custom vertex shader too - needed for fullscreen triangle trick
     Shader motionBlur = LoadShader("shaders/mb.vs", "shaders/mb.fs");
     shaders.push_back(motionBlur);
