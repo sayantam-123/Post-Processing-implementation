@@ -25,7 +25,7 @@ void main(){
 
     vec2 velocity = (H.xy - previousPos.xy) * 0.5;
 
-    float maxVel = 0.05;
+    float maxVel = 0.02;
     velocity = clamp(velocity, -maxVel, maxVel);
 
     vec2 uv = fragTexCoord;
